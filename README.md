@@ -1,2 +1,3 @@
-# arduino-lightning
-Lightning payments for Arduino (Work in progress)
+# Lightning library for Arduino
+
+Work in progress

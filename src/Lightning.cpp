@@ -32,7 +32,44 @@ LightningInvoice::LightningInvoice(
     // TODO: description hash if len > 639
     size_t l = strlen(description);
     addField(13, (uint8_t *)description, l);
+   
 }
+
+
+int LightningInvoice::addRoutingInfo(uint8_t pubkey[33], uint8_t short_channel_id[8], uint32_t fee_base_msat, uint32_t fee_proportional_millionths, uint16_t cltv_expiry_delta){
+
+    uint32_t offset = 0;
+    uint8_t r[51];         // 33+8+4+4+2
+
+    memcpy(r, pubkey, 33);
+    memcpy(r + 33, short_channel_id, 8);
+
+    uinr8_t fee_base_msat_big_endian[4];
+    fee_base_msat_big_endian[0] = ((uint8_t *)&fee_base_msat)[3];
+    fee_base_msat_big_endian[1] = ((uint8_t *)&fee_base_msat)[2];
+    fee_base_msat_big_endian[2] = ((uint8_t *)&fee_base_msat)[1];
+    fee_base_msat_big_endian[3] = ((uint8_t *)&fee_base_msat)[0];
+    memcpy(r + 33 + 8, fee_base_msat_big_endian, 4);
+    
+
+    uinr8_t fee_proportional_millionths_big_endian[4];
+    fee_proportional_millionths_big_endian[0] = ((uint8_t *)&fee_proportional_millionths)[3];
+    fee_proportional_millionths_big_endian[1] = ((uint8_t *)&fee_proportional_millionths)[2];
+    fee_proportional_millionths_big_endian[2] = ((uint8_t *)&fee_proportional_millionths)[1];
+    fee_proportional_millionths_big_endian[3] = ((uint8_t *)&fee_proportional_millionths)[0];
+    memcpy(r + 33 + 8 + 4, fee_proportional_millionths_big_endian, 4);
+
+
+    uinr8_t cltv_expiry_delta_big_endian[2];
+    cltv_expiry_delta_big_endian[0] = ((uint8_t *)&cltv_expiry_delta)[1];
+    cltv_expiry_delta_big_endian[1] = ((uint8_t *)&cltv_expiry_delta)[0];
+    memcpy(r + 33 + 8 + 4 + 4, fee_proportional_millionths_big_endian, 2);
+
+
+    addField(3, r, 51);
+
+}
+
 
 LightningInvoice::LightningInvoice(const char * invoice){
     size_t l = strlen(invoice);

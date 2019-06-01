@@ -27,6 +27,7 @@ public:
 	uint32_t timestamp() const;
 	string description() const;
 	int addField(uint8_t code, const uint8_t * data, uint16_t dataLen);
+        int addRoutingInfo(uint8_t pubkey[33], uint8_t short_channel_id[8], uint32_t fee_base_msat, uint32_t fee_proportional_millionths, uint16_t cltv_expiry_delta);
 	int setExpiry(uint32_t expiry);
 	int addRawData(const uint8_t * data, size_t dataLen);
 	int hmr(char * arr, size_t arrSize) const;

@@ -1,10 +1,12 @@
 #ifndef __LIGHTNING_H__BDDNDVJ300
 #define __LIGHTNING_H__BDDNDVJ300
 
-#include <Arduino.h>
-#include <Bitcoin.h>
+#include "Bitcoin.h"
 
-class LightningInvoice : public Printable{
+#include <string.h>
+using std::string;
+
+class LightningInvoice{
 private:
 	uint8_t * buffer = NULL;
 	size_t bufLen = 0;
@@ -23,12 +25,12 @@ public:
 	int hash(uint8_t hashArr[32]);
 	Signature sign(const PrivateKey pk);
 	uint32_t timestamp() const;
-	String description() const;
+	string description() const;
 	int addField(uint8_t code, const uint8_t * data, uint16_t dataLen);
 	int setExpiry(uint32_t expiry);
 	int addRawData(const uint8_t * data, size_t dataLen);
 	int hmr(char * arr, size_t arrSize) const;
-	size_t printTo(Print &p) const;
+	// size_t printTo(Print &p) const;
 	size_t toCharArray(char * arr, size_t arrSize) const;
     // LightningInvoice &operator=(LightningInvoice const &other);
 };

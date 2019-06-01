@@ -1,7 +1,10 @@
 #include "Lightning.h"
-#include <Conversion.h>
-#include <Bitcoin.h>
-#include <Hash.h>
+#include "Conversion.h"
+#include "Bitcoin.h"
+#include "Hash.h"
+
+#include <string.h>
+using std::string;
 
 #define MAX_INVOICE_SIZE 400
 
@@ -18,7 +21,7 @@ LightningInvoice::LightningInvoice(
     buffer = (uint8_t *) calloc( 7, sizeof(uint8_t));
     bufLen = 7;
 
-    for(int i=0; i<8; i++){
+    for(int i=0; i<6; i++){
         buffer[6-i] = (time % 32);
         time = (time / 32);
     }
@@ -196,7 +199,7 @@ uint32_t LightningInvoice::timestamp() const{
     }
     return ts;
 }
-String LightningInvoice::description() const{
+string LightningInvoice::description() const{
     size_t cursor = 7;
     while(cursor < bufLen){
         uint8_t type = buffer[cursor];
@@ -211,10 +214,10 @@ String LightningInvoice::description() const{
                 free(description);
                 return "";
             }
-            String s;
+            string s;
             for(int c=0; c<descriptionLength; c++){
                 if(description[c]!=0){
-                    s = String((char *)(description+c));
+                    s = string((char *)(description+c));
                     break;
                 }
             }
@@ -233,27 +236,27 @@ String LightningInvoice::description() const{
     return "";
 }
 
-size_t LightningInvoice::printTo(Print &p) const{
-    // p.print("lightning:");
-    char hrp[20] = { 0 };
-    hmr(hrp, sizeof(hrp));
-    uint8_t * data = (uint8_t *) calloc(bufLen + 120, sizeof(uint8_t));
-    memcpy(data, buffer, bufLen);
-    size_t len = bufLen;
-    uint8_t sig_bin[65];
-    sig.bin(sig_bin);
-    sig_bin[64] = sig.index;
-    size_t sig_len = 0;
-    convert_bits(data+len, &sig_len, 5, sig_bin, sizeof(sig_bin), 8, 1);
-    len += sig_len;
-    char * output = (char *) calloc(strlen(hrp)+len+20, sizeof(char));
-    bech32_encode(output, hrp, data, len);
-    p.print(output);
-    size_t l = strlen(output);
-    free(data);
-    free(output);
-    return l; // just strlen would be better
-}
+// size_t LightningInvoice::printTo(Print &p) const{
+//     // p.print("lightning:");
+//     char hrp[20] = { 0 };
+//     hmr(hrp, sizeof(hrp));
+//     uint8_t * data = (uint8_t *) calloc(bufLen + 120, sizeof(uint8_t));
+//     memcpy(data, buffer, bufLen);
+//     size_t len = bufLen;
+//     uint8_t sig_bin[65];
+//     sig.bin(sig_bin);
+//     sig_bin[64] = sig.index;
+//     size_t sig_len = 0;
+//     convert_bits(data+len, &sig_len, 5, sig_bin, sizeof(sig_bin), 8, 1);
+//     len += sig_len;
+//     char * output = (char *) calloc(strlen(hrp)+len+20, sizeof(char));
+//     bech32_encode(output, hrp, data, len);
+//     p.print(output);
+//     size_t l = strlen(output);
+//     free(data);
+//     free(output);
+//     return l; // just strlen would be better
+// }
 
 size_t LightningInvoice::toCharArray(char * arr, size_t arrSize) const{
     char hrp[20] = { 0 };
@@ -262,7 +265,7 @@ size_t LightningInvoice::toCharArray(char * arr, size_t arrSize) const{
     memcpy(data, buffer, bufLen);
     size_t len = bufLen;
     uint8_t sig_bin[65];
-    sig.bin(sig_bin);
+    sig.bin(sig_bin, 65);
     sig_bin[64] = sig.index;
     size_t sig_len = 0;
     convert_bits(data+len, &sig_len, 5, sig_bin, sizeof(sig_bin), 8, 1);

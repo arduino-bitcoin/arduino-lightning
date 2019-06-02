@@ -21,7 +21,7 @@ LightningInvoice::LightningInvoice(
     buffer = (uint8_t *) calloc( 7, sizeof(uint8_t));
     bufLen = 7;
 
-    for(int i=0; i<6; i++){
+    for(int i=0; i<7; i++){
         buffer[6-i] = (time % 32);
         time = (time / 32);
     }
